@@ -2,7 +2,7 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ArrayList = @import("array_list.zig").ArrayList;
 
-pub fn Stack(comptime T: type) type {
+pub fn Queue(comptime T: type) type {
     return struct {
         const Self = @This();
 
@@ -18,24 +18,24 @@ pub fn Stack(comptime T: type) type {
             self.list.deinit();
         }
 
-        pub fn push(self: *Self, value: T) !void {
+        pub fn enqueue(self: *Self, value: T) !void {
             try self.list.push(value);
         }
 
-        pub fn pop(self: *Self) ?T {
-            return self.list.pop();
+        pub fn dequeue(self: *Self) ?T {
+            return self.list.remove(0) catch null;
         }
 
         pub fn peek(self: *const Self) ?T {
-            return self.list.peek();
-        }
-
-        pub fn isEmpty(self: *const Self) bool {
-            return self.list.isEmpty();
+            return self.list.get(0);
         }
 
         pub fn size(self: *const Self) usize {
             return self.list.size();
+        }
+
+        pub fn isEmpty(self: *const Self) bool {
+            return self.list.isEmpty();
         }
 
         pub fn clear(self: *Self) void {
