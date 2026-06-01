@@ -1,5 +1,5 @@
 const std = @import("std");
-const ArrayList = @import("ds/array_list.zig").ArrayList;
+const Stack = @import("ds/stack.zig").Stack;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -7,21 +7,16 @@ pub fn main() !void {
 
     const allocator = gpa.allocator();
 
-    var list = ArrayList(i32).init(allocator);
-    defer list.deinit();
+    var stack: Stack(i32) = .init(allocator);
+    defer stack.deinit();
 
-    try list.push(32);
-    try list.push(17);
-    try list.push(25);
-    try list.insert(3, 90);
-    try list.insert(3, 71);
+    try stack.push(9);
+    try stack.push(2);
+    try stack.push(5);
 
-    _ = try list.remove(0);
-    _ = try list.remove(3);
-
-    for (list.iter(), 1..) |x, i| {
-        std.debug.print("{}. {}\n", .{ i, x });
+    while (stack.pop()) |item| {
+        std.debug.print("Popping: {}\n", .{item});
     }
 
-    std.debug.print("Contains 17 - {}\n", .{list.contains(17)});
+    std.debug.print("Is Empty: {}\n", .{stack.isEmpty()});
 }
