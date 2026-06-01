@@ -184,22 +184,6 @@ pub fn ArrayList(comptime T: type) type {
         pub fn size(self: *const Self) usize {
             return self.len;
         }
-
-        /// Utility debug function to print the list contents to stderr.
-        /// Warning: Assumes type `T` can be formatted by the default "{}" specifier.
-        pub fn print(self: *const Self) void {
-            std.debug.print("[", .{});
-
-            for (0..self.len) |i| {
-                std.debug.print("{}", .{self.items[i]});
-
-                if (i < self.len - 1) {
-                    std.debug.print(", ", .{});
-                }
-            }
-
-            std.debug.print("]\n", .{});
-        }
     };
 }
 
