@@ -48,12 +48,10 @@ pub fn LinkedList(comptime T: type) type {
 
             if (self.head == null) {
                 self.head = new_node;
-                self.tail = new_node;
-                self.len += 1;
-                return;
+            } else {
+                self.tail.?.next = new_node;
             }
 
-            self.tail.?.next = new_node;
             self.tail = new_node;
             self.len += 1;
         }

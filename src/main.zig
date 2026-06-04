@@ -13,9 +13,13 @@ pub fn main() !void {
     var list = LinkedList(i32).init(allocator);
     defer list.deinit();
 
-    try list.append(31);
-    try list.append(12);
-    try list.append(365);
+    try list.prepend(4);
+    try list.prepend(8);
+    try list.prepend(3);
+
+    // try list.append(31);
+    // try list.append(12);
+    // try list.append(365);
 
     // try list.prepend(-87);
 
