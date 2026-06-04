@@ -13,6 +13,7 @@ pub fn LinkedList(comptime T: type) type {
         head: ?*Node,
         tail: ?*Node,
         len: usize,
+
         allocator: Allocator,
 
         pub fn init(allocator: Allocator) Self {
@@ -192,6 +193,16 @@ pub fn LinkedList(comptime T: type) type {
             }
 
             self.head = prev;
+        }
+
+        pub fn headValue(self: *const Self) ?T {
+            if (self.head) |head| return head.value;
+            return null;
+        }
+
+        pub fn tailValue(self: *const Self) ?T {
+            if (self.tail) |tail| return tail.value;
+            return null;
         }
     };
 }
