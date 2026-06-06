@@ -187,22 +187,33 @@ pub fn BinarySearchTree(comptime T: type) type {
             return current.value;
         }
 
+        /// Removes the node with the specified value from the tree recursively.
+        /// Returns the new root.
         fn removeNode(self: *Self, node: ?*Node, value: T) ?*Node {
             if (node == null) return null;
 
             var current = node.?;
 
+            // If the current code's value is greater,
+            // remove from the left subtree and return subtree's root.
             if (current.value > value) {
                 current.left = self.removeNode(current.left, value);
             } else if (current.value < value) {
+                // Else if the current code's value is smaller,
+                // remove from the right subtree and return subtree's root.
                 current.right = self.removeNode(current.right, value);
             } else {
+                // Value found, now remove the node
+
+                // If node has no child, just destry the node and return null as the new root
                 if (current.left == null and current.right == null) {
                     self.allocator.destroy(current);
                     self.len -= 1;
                     return null;
                 }
 
+                // If node's right child is present (left == null),
+                // destroy the current node and return the right node as the new root.
                 if (current.left == null) {
                     const temp = current.right;
                     self.allocator.destroy(current);
@@ -210,6 +221,8 @@ pub fn BinarySearchTree(comptime T: type) type {
                     return temp;
                 }
 
+                // If node's left child is present (right == null),
+                // destroy the current node and return the left node as the new root.
                 if (current.right == null) {
                     const temp = current.left;
                     self.allocator.destroy(current);
@@ -217,15 +230,22 @@ pub fn BinarySearchTree(comptime T: type) type {
                     return temp;
                 }
 
+                // Both childs are present.
+                // Find a successor from the right subtree
+                // and replace the value of the node to the successor.
+                // Then delete the successor node
                 var successor = current.right.?;
                 while (successor.left != null) successor = successor.left.?;
                 current.value = successor.value;
                 current.right = self.removeNode(current.right, successor.value);
             }
 
+            // Return the updated node
             return current;
         }
 
+        /// Removes the node with the passed value.
+        /// Changes the root to the new root if root node itself get removed.
         pub fn remove(self: *Self, value: T) void {
             self.root = self.removeNode(self.root, value);
         }
