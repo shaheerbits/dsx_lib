@@ -155,6 +155,50 @@ pub fn DoublyLinkedList(comptime T: type) type {
         pub fn last(self: *const Self) ?T {
             return if (self.tail) |tail| tail.value else null;
         }
+
+        pub fn insertAt(self: *Self, index: usize, value: T) !void {
+            if (index > self.len) return error.InvalidIndex;
+
+            if (index == 0) return try self.prepend(value);
+            if (index == self.len) return try self.append(value);
+
+            const new_node = try self.allocator.create(Node);
+            new_node.* = .{ .value = value, .prev = null, .next = null };
+
+            var temp = self.head.?;
+
+            for (0..index) |_| temp = temp.next.?;
+
+            new_node.next = temp;
+            new_node.prev = temp.prev;
+
+            temp.prev.?.next = new_node;
+            temp.prev = new_node;
+
+            self.len += 1;
+        }
+
+        pub fn removeAt(self: *Self, index: usize) ?T {
+            if (index >= self.len) return null;
+
+            if (index == 0) return self.popFront();
+            if (index == self.len - 1) return self.popBack();
+
+            var temp = self.head.?;
+
+            for (0..index) |_| temp = temp.next.?;
+
+            temp.prev.?.next = temp.next;
+            temp.next.?.prev = temp.prev;
+
+            const value = temp.value;
+
+            self.allocator.destroy(temp);
+
+            self.len -= 1;
+
+            return value;
+        }
     };
 }
 
