@@ -4,9 +4,10 @@ const std = @import("std");
 // const Queue = @import("ds/queue.zig").Queue;
 // const CircularQueue = @import("ds/circular_queue.zig").CircularQueue;
 // const LinkedList = @import("ds/linked_list.zig").LinkedList;
-// const Queue = @import("ds/queuev2.zig").Queue;
+// const QueueV2 = @import("ds/queuev2.zig").Queue;
 // const BinarySearchTree = @import("ds/binary_search_tree.zig").BinarySearchTree;
-const DoublyLinkedList = @import("ds/doubly_linked_list.zig").DoublyLinkedList;
+// const DoublyLinkedList = @import("ds/doubly_linked_list.zig").DoublyLinkedList;
+const HashMap = @import("ds/hashmap.zig").HashMap;
 
 pub fn main() !void {
     var debugAllocator = std.heap.DebugAllocator(.{}).init;
@@ -14,24 +15,18 @@ pub fn main() !void {
 
     const allocator = debugAllocator.allocator();
 
-    var doubly = DoublyLinkedList(i32).init(allocator);
-    defer doubly.deinit();
+    var map = try HashMap([]const u8).init(allocator, 16);
+    defer map.deinit();
 
-    try doubly.append(32);
-    try doubly.append(18);
-    try doubly.insertAt(0, 3);
-    try doubly.insertAt(0, 9);
+    try map.put("name", "Shaheer");
+    try map.put("age", "Shaheer");
+    try map.put("code", "Shaheer");
+    try map.remove("age");
+    // try map.put("name", "Mariya");
 
-    if (doubly.removeAt(3)) |value| {
-        std.debug.print("Removed: {}\n", .{value});
+    if (map.get("code")) |val| {
+        std.debug.print("{s}\n", .{val});
+    } else {
+        std.debug.print("Key Not Found!", .{});
     }
-
-    var temp = doubly.head;
-
-    while (temp) |node| {
-        std.debug.print("{}->", .{node.value});
-        temp = node.next;
-    }
-
-    std.debug.print("null\n", .{});
 }

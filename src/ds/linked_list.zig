@@ -3,7 +3,7 @@ const Allocator = std.mem.Allocator;
 
 pub fn LinkedList(comptime T: type) type {
     return struct {
-        const Node = struct {
+        pub const Node = struct {
             value: T,
             next: ?*Node,
         };
@@ -170,6 +170,25 @@ pub fn LinkedList(comptime T: type) type {
             self.head = null;
             self.tail = null;
             self.len = 0;
+        }
+
+        pub fn removeAt(self: *Self, index: usize) !?T {
+            if (index >= self.len) return error.InvalidIndex;
+
+            if (index == 0) return self.popFront();
+            if (index == self.len - 1) return self.popBack();
+
+            var temp = self.head.?;
+
+            for (0..index - 1) |_| temp = temp.next.?;
+
+            const value = temp.next.?.value;
+
+            self.allocator.destroy(temp.next.?);
+
+            self.len -= 1;
+
+            return value;
         }
 
         pub fn size(self: *const Self) usize {

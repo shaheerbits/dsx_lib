@@ -178,8 +178,8 @@ pub fn DoublyLinkedList(comptime T: type) type {
             self.len += 1;
         }
 
-        pub fn removeAt(self: *Self, index: usize) ?T {
-            if (index >= self.len) return null;
+        pub fn removeAt(self: *Self, index: usize) !?T {
+            if (index >= self.len) return error.InvalidIndex;
 
             if (index == 0) return self.popFront();
             if (index == self.len - 1) return self.popBack();
