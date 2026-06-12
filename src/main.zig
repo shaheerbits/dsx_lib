@@ -19,12 +19,11 @@ pub fn main() !void {
     defer map.deinit();
 
     try map.put("name", "Shaheer");
-    try map.put("age", "Shaheer");
-    try map.put("code", "Shaheer");
+    try map.put("age", "22");
+    try map.put("code", "Zig");
     try map.remove("age");
-    // try map.put("name", "Mariya");
 
-    if (map.get("code")) |val| {
+    if (map.get("age")) |val| {
         std.debug.print("{s}\n", .{val});
     } else {
         std.debug.print("Key Not Found!", .{});

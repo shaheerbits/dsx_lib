@@ -92,7 +92,9 @@ pub fn HashMap(comptime V: type) type {
             if (self.findByKey(&self.buckets[bucketIndex], key)) |existingNode| {
                 existingNode.value.value = value;
             } else {
-                try self.buckets[bucketIndex].append(Entry{ .key = key, .value = value });
+                const owned_key = try self.allocator.dupe(u8, key);
+                errdefer self.allocator.free(owned_key);
+                try self.buckets[bucketIndex].append(Entry{ .key = owned_key, .value = value });
                 self.len += 1;
             }
         }
@@ -114,7 +116,8 @@ pub fn HashMap(comptime V: type) type {
         pub fn remove(self: *Self, key: []const u8) !void {
             const bucketIndex = self.getBucketIndex(self.getHash(key));
             if (self.findIndexByKey(&self.buckets[bucketIndex], key)) |index| {
-                _ = try self.buckets[bucketIndex].removeAt(index);
+                const removed = try self.buckets[bucketIndex].removeAt(index);
+                self.allocator.free(removed.?.key);
                 self.len -= 1;
             } else {
                 return error.KeyNotFound;
@@ -122,6 +125,15 @@ pub fn HashMap(comptime V: type) type {
         }
 
         pub fn clear(self: *Self) void {
+            for (self.buckets) |*bucket| {
+                var temp = bucket.head;
+
+                while (temp) |node| {
+                    self.allocator.free(node.value.key);
+                    temp = node.next;
+                }
+            }
+
             for (self.buckets) |*bucket| {
                 bucket.clear();
             }
