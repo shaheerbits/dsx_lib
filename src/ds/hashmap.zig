@@ -44,7 +44,7 @@ pub fn HashMap(
 
         pub fn clear(self: *Self) void {
             for (self.buckets) |*bucket| {
-                bucket.deinit();
+                bucket.clear();
             }
 
             self.len = 0;
@@ -78,8 +78,8 @@ pub fn HashMap(
             return self.len == 0;
         }
 
-        fn getBucketIndex(self: *const Self, key: K) u64 {
-            return hashFn(key) % self.capacity;
+        fn getBucketIndex(self: *const Self, key: K) usize {
+            return @intCast(hashFn(key) % self.capacity);
         }
 
         fn putEntry(self: *Self, bucket: *LinkedList(Entry), key: K, value: V) !void {
@@ -132,6 +132,7 @@ pub fn HashMap(
 
                     if (previous) |prev_node| {
                         prev_node.next = next;
+                        if (next == null) bucket.tail = prev_node;
                     } else {
                         bucket.head = next;
                         if (bucket.head == null) bucket.tail = null;
@@ -309,6 +310,7 @@ test "put updates the existing key if present" {
     defer marks.deinit();
 
     try expectEqual(marks.size(), 0);
+    try expect(marks.isEmpty());
 
     try marks.put("Alex", 92);
     try marks.put("Emily", 89);
