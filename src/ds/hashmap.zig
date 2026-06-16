@@ -60,6 +60,22 @@ pub fn HashMap(
             return self.getEntry(&self.buckets[bucketIndex], key);
         }
 
+        pub fn getPtr(self: *Self, key: K) ?*V {
+            const bucketIndex = self.getBucketIndex(key);
+
+            var temp = self.buckets[bucketIndex].head;
+
+            while (temp) |node| {
+                if (eqlFn(node.value.key, key)) {
+                    return &node.value.value;
+                }
+
+                temp = node.next;
+            }
+
+            return null;
+        }
+
         pub fn contains(self: *const Self, key: K) bool {
             const bucketIndex = self.getBucketIndex(key);
             return self.containsEntry(&self.buckets[bucketIndex], key);
@@ -235,7 +251,12 @@ test "get returns null on key not found" {
 test "put and get works with slices as values" {
     const allocator = std.testing.allocator;
 
-    var programming_languages = try HashMap([]const u8, []const []const u8, stringHashFn, stringEqlFn).init(
+    var programming_languages = try HashMap(
+        []const u8,
+        []const []const u8,
+        stringHashFn,
+        stringEqlFn,
+    ).init(
         allocator,
         16,
     );

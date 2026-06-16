@@ -128,6 +128,17 @@ pub fn ArrayList(comptime T: type) type {
             return removed;
         }
 
+        pub fn removeItem(self: *Self, value: T) bool {
+            for (0..self.len) |i| {
+                if (std.meta.eql(self.items[i], value)) {
+                    _ = self.remove(i);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// Returns true if the target value exists in the active bounds of the list.
         /// Note: Uses deep memory equality via `std.meta.eql`.
         pub fn contains(self: *const Self, value: T) bool {
